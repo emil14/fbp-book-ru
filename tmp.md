@@ -1,0 +1,1 @@
+which he named for Linda Lovelace, the lead actress in the porn movie Deep Throat, mocking Ada's tribute to the scientist and first attributed computer programmer, Ada Lovelace
