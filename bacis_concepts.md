@@ -161,13 +161,12 @@ enddo
 
 Мы только что нарисовали нашу первую (частично) FBP-структуру! Программное обеспечение FBP может выполнять такую диаграмму напрямую (без необходимости преобразовывать ее в процедурный код), и на самом деле вы можете реконфигурировать ее любым способом - добавлять компоненты, удалять их, переставлять их и так далее. До бесконечности. Это то самое «Legoland-программирование», которого мы все так ждали!
 
-Что теперь означает линия, `FILTER.OUT` -> `SELECTOR.IN`? Это соединение, по которому будут перемещаться IP при переходе от `FILTER` к `SELECTOR`. Её можно рассматривать как канал, который может содержать до некоторого максимального количества IP (его «емкость»). Таким образом, чтобы определить эту структуру, мы должны зафиксировать, что `OUT` у `FILTER` подключен к `IN` у `SELECTOR` посредством соединения с емкостью `n`.
+Что означает линия `FILTER.OUT -> SELECTOR.IN`? Это соединение, по которому будут перемещаться IP при переходе от `FILTER` к `SELECTOR`. Её можно рассматривать как канал, который может содержать до некоторого максимального количества IP (его «емкость»). Таким образом, чтобы определить эту структуру, мы должны зафиксировать, что `OUT` у `FILTER` подключен к `IN` у `SELECTOR` посредством соединения с емкостью `n`.
 
 Как же нам убедительно доказать, что это соединение правильно обрабатывает наши данные? Что ж, есть два ограничения, которые применяются к IP, передаваемым между любыми двумя процессами. Если мы используем имена из приведенного выше примера, то:
 
-- каждый IP должен поступить в `SELECTOR` после того, как он покинет `FILTER`
-
-- любая пара IP, выходящих из `FILTER` в заданной последовательности, должна прибыть в `SELECTOR` в той же последовательности
+1. каждый IP должен поступить в `SELECTOR` после того, как он покинет `FILTER`
+2. любая пара IP, выходящих из `FILTER` в заданной последовательности, должна прибыть в `SELECTOR` в той же последовательности
 
 Первое ограничение называется «_условием потока_», а второе - «условием сохранения порядка». Если думать, используя аналогию фабрики, то это все, что нужно для обеспечения правильной обработки. Предположим, два процесса `A` и `B` соответственно генерируют и используют два IP, `X` и `Y`. `A` отправит `X`, затем отправит `Y`; B получит `X`, затем `Y`(условие сохранения порядка). Кроме того, `B` должен получить `X` после того, как `A` отправит его, и аналогично для `Y` (условие потока). Это не значит, что `B` не может использовать `receive` раньше - он просто будет приостановлен до тех пор, пока не поступят данные. Также не имеет значения, отправляет ли `A` пакет `Y` до или после того, как `B` получит пакет `X`. Система совершенно спокойно обработает любые ситуации с наилучшей производительностью. Мы можем показать это схематично - ясно, что вторая диагональ может скользить вперед или назад во времени, не влияя на конечный результат.
 
@@ -175,75 +174,85 @@ enddo
 
 Фрагмент 3.9
 
-Соединения могут иметь более одного входного конца, но могут иметь только один выход. IP из нескольких источников будут объединяться в один поток, поступая на другой конец в последовательности «первым пришел - первым ушёл». Мы теряем предсказуемость взаимосвязи между выходом и входом, но достаточно легко поместить код (прим.пер. - какой?) в IP, если вы когда-нибудь захотите снова разделить их.
+Соединения могут иметь более одного входа, но только один выход. IP из источников будут объединяться в один поток, поступая на другой конец в формате «первый пришел - первым ушёл». Мы теряем предсказуемость взаимосвязи между выходом и входом, но достаточно легко добавить ID в IP, если возникнет необходимость дебага.
 
-До сих пор мы игнорировали происхождение IP. Мы поговорили об их получении, отправке, сбросе. Но должны же они были возникнуть в какой-то момент. Эта очень важная функция называется `create`, и за нее отвечает тот компонент, который первым решит, что IP-адрес необходим. «Время жизни» IP - это интервал между его созданием и уничтожением. С стороны очевидно, что что-то необходимо создать, прежде чем это можно будет использовать, но как это применимо к бизнес-приложению? Многие IP в приложении создаются из файловых записей: обычно файлы превращаются в IP во время чтения, а IP снова превращаются в файлы (а затем уничтожаются) во время записи. Для выполнения этих функций существует два стандартных компонента (`Read Sequential` и `Write Sequential`), о которых мы поговорим подробнее в следующих главах. 
+До сих пор мы игнорировали происхождение IP. Мы поговорили об их получении, отправке, сбросе. Но должны же они были возникнуть в какой-то момент. Эта очень важная функция называется `create`, и за нее отвечает тот компонент, который первым решит, что IP-адрес необходим. «Время жизни» IP - это интервал между его созданием и уничтожением. С стороны очевидно, что что-то необходимо создать, прежде чем это можно будет использовать, но как это применимо к бизнес-приложению? Многие IP в приложении создаются из файловых записей: обычно файлы превращаются в IP во время чтения, а IP снова превращаются в файлы (а затем уничтожаются) во время записи. Для выполнения этих функций существует два стандартных компонента (`Read Sequential` и `Write Sequential`), о которых мы поговорим подробнее в следующих главах.
 
 Однако, часто случается, что вам надо создать IP для определенной цели, который никогда не отобразиться в файле - одним из примеров является «контрольный IP», который мы опишем в следующей главе. Другим примером может быть компонент-счётчик, подсчитывающий IP, что он получает, используя "IP-счётчики". Такой IP используется для осуществления подсчета и, наконец, отправляется на выходной порт, когда счетчик завершается. Такой компонент получит подсчитываемые IP, но перед тем, как он начнет подсчет, он должен создать IP-счётчик, в котором будет поддерживаться подсчет.
 
-This is the typical logic of a Counter component (by the way, this kind of component normally tries to send incoming IPs to an output port, and drops them if this port is not connected):
+Вот типичная логика компонента `Counter` (кстати, этот тип компонента обычно пытается отправить входящие IP на выходной порт и отбрасывает их, если этот порт не подключен):
 
-        create counter IP using c
-        zero out counter field in counter IP
-        receive from IN using a
-        do while receive has not reached end of data
-            increment count in counter IP
-            send a to OUT
-            if send wasn't successful,
-                drop a
-            endif
-            receive from IN using a
-        enddo
-        send c to COUNT port
+```
+create counter IP using c
+zero out counter field in counter IP
+receive from IN using a
+do while receive has not reached end of data
+    increment count in counter IP
+    send a to OUT
+    if send wasn't successful
+        drop a
+    endif
+    receive from IN using a
+enddo
+send c to COUNT port
+```
 
-Figure 3.10
+Фрагмент 3.10
 
-To discover whether OUT is connected, we simply try to send to this port. If the send works, the IP is disposed of; if not, we still have it, so we dispose of it by dropping it. What if COUNT is not connected? Since the whole point of this component is to calculate a count, if COUNT is not connected there's not much point in even running this component, so it would be even better to test this right up front.
+Чтобы узнать, подключен ли `OUT`, мы просто пытаемся отправить туда данные. Если отправка работает, IP удаляется; в противном случае мы избавляемся от него, уничтожая. Что делать, если `COUNT` не подключен? Поскольку весь смысл этого компонента заключается в подсчёте, то если `COUNT` не подключен, то нет никакого смысла даже запускать этот компонент, поэтому лучше протестировать это.
 
-As we said above, all IPs must eventually be disposed of, and this will be done by some function which knows that the IP in question is no longer needed. This will often be Writer components, but not necessarily. The Selector example above should really be enhanced as follows:
+Как мы уже говорили выше, все IP в конечном итоге должны быть удалены, и это будет делать какая-то функция, которая знает, что данный IP больше не нужен. Часто это будут компоненты `Writer`, но не обязательно. Приведенный до этого `SELECTOR` можно улучшить:
 
-        receive from IN using a
-        do while receive has not reached end of data
-            if c is true
-                send a to ACC
-            else
-                send a to REJ
-            endif
-            if the send wasn't successful,
-                drop a
-            endif
-            receive from IN using a
-        enddo
+```
+receive from IN using a
+do while receive has not reached end of data
+    if c is true
+        send a to ACC
+    else
+        send a to REJ
+    endif
+    if the send wasn't successful
+        drop a
+    endif
+    receive from IN using a
+enddo
+```
 
-Figure 3.11
+Фрагмент 3.11
 
-At the beginning of this chapter, we talked about data as being primary. In FBP it is not file records which are primary, but the IPs passing through the application's processes and connections. Our experience is that this is almost the first thing an FBP designer must think about. Once you start by designing your IPs first, you realize that file records are only one of the ways a particular process may decide to store IPs. The other thing file records are used for is to act as interfaces with other systems, but even here they still have to be converted to IPs before another process can handle them.
+В начале этой главы мы говорили о данных как о первичных. В FBP первичными являются не файловые записи, а IP, проходящие через процессы и соединения. Опыт показывает, это первое, о чем должен думать дизайнер FBP. Как только вы начнете с разработки своих IP, вы поймете, что файлы - это только один из способов, которыми конкретный процесс может решить хранить IP. Другая причина, по которой которой используются файлы - они играют роль интерфейсов с другими системами, но даже здесь они все равно должны быть преобразованы в IP, прежде чем другой процесс сможет их обработать.
 
-Let's think about the IPs passing across any given connection - what is their layout? Clearly it must be something that the upstream process can output and the downstream process can handle. The FBP methodology requires the designer to lay out the IPs first, and then define the transforms which apply to them. If two connected components have different requirements for their data, it is simple to insert a "transform" component between them. The general rule is that two neighbours must either agree on the format of data they share, or agree on data descriptions which encode the data format in some way. Suppose, for instance, that process B can handle two formats of IP. If the application designer knows that process A is always going to generate the first format, s/he may parametrize B so that it knows what to expect. If A is going to generate an unpredictable mix of the two formats, it will have to indicate to B for each IP what format it is in, e.g. by an agreed-upon code in a field, by IP length, by a preceding IP, or whatever. An interesting variant of this is to use free-form data. There may be situations where you don't want to tie the format of IPs down too tightly, e.g. when communicating between subsystems which are both undergoing change. To separate the various fields or sections, you could imbed delimiters into the data. You will pay more in CPU time, but this may well be worth it if it will reduce your maintenance costs. This is why, for instance, communication formats between PCs and hosts often use free-form ASCII separated by delimiters (binary fields present unique problems when uploading and downloading data). Lastly, the more complete FBP implementations provide mechanisms for attaching standard descriptions to IPs, called Descriptors, allowing them to be used and reused in more and more applications. Descriptors allow individual fields in IPs to be retrieved or replaced by name - I will be describing them in more detail in a later chapter.
+Давайте подумаем об IP, проходящих через любое соединение - какова их структура? Очевидно, это должно быть что-то, что может вышестоящий процесс может производить, а подчиненный - обрабатывать. Методология FBP требует, чтобы разработчик сначала описал IP, а затем определил преобразования, которые к ним применяются. Если два подключенных друг к другу компонента имеют разные требования к своим данным, между ними легко вставить компонент «преобразования». Общее правило - два соседа должны либо согласовать формат данных, которым они оба совместно пользуются, либо согласовать "описание данных", которые каким-либо образом кодируют формат данных. Предположим, процесс `B` может обрабатывать два формата IP. Если разработчик приложения знает, что процесс `A` всегда будет генерировать первый формат, он/она может параметризовать `B`, чтоб тот знал, чего ожидать. Если `A` собирается создать непредсказуемое сочетание двух форматов, ему необходимо будет указать `B` для каждого IP, в каком формате каждый из них находится, например специальным кодом в одном из полей, длиной IP, предшествующим IP или еще как-то. Интересный вариант - использовать данные в свободной форме. Могут быть ситуации, когда вы не хотите слишком сильно завязываться на формат IP, например при обмене данными между подсистемами, которые обе претерпевают изменения. Чтобы разделить отдельные поля или секции, вы можете вставить в данные разделители. Вы заплатите больше машинного времени, но это может окупиться, если снизит ваши затраты на обслуживание. Вот почему, например, в форматах связи между ПК и хостами (прим.пер - серверами) часто используется [ASCII](https://en.wikipedia.org/wiki/ASCII)-код произвольной формы, разделенный сепараторами (двоичные поля обеспечивают особые проблемы при выгрузке-загрузке данных). Наконец, более полные реализации FBP предоставляют механизмы для присоединения стандартных описаний к IP, так называемые _дескрипторы_, что позволяет повторно использовать во все большем количестве приложений. Дескрипторы позволяют извлекать или заменять отдельные поля в IP - я опишу их более подробно в следующей главе.
 
-The next concept I want to describe is the ability to group components into packages which can be used as if they were components in their own right. This kind of component is called a "composite component". It is built up out of lower-level components, but on the outside it looks just like any other component. Components which are not built up of lower-level components are called "elementary", and are usually written in some Higher Level Language (DFDM supports both PL/I and VS COBOL II), while THREADS supports C. DFDM as distributed also includes a small set of "starter set" components written in a low-level programming language for performance reasons, but it is not expected that the majority of users will need to code at this level.
+Следующая концепция, которую я хочу описать, - это возможность группировать компоненты в пакеты, которые можно использовать, как если бы они были отдельными компонентами. Такой компонент называется «составной компонент». Он построен из компонентов более низкого уровня, но снаружи выглядит так же, как и любой другой компонент. Компоненты, которые не созданы из компонентов более низкого уровня, называются «элементарными» и обычно написаны на каком-либо "языке более высокого уровня" (DFDM поддерживает как PL/I, так и VS COBOL II), в то время как THREADS поддерживает C. Распределенный DFDM также включает в себя небольшой набор компонентов «starter set», написанный на языке программирования низкого уровня из соображений производительности, но не ожидается, что большинству пользователей потребуется кодировать на этом уровне.
 
-To make a composite component look like other components from the outside, obviously it must have ports of its own. We will therefore take the previous diagram, and show how we can package it into a composite called COMPA:
+Чтобы составной компонент выглядел как другие компоненты снаружи, очевидно, у него должны быть собственные порты. Поэтому мы возьмем предыдущую диаграмму и покажем, как мы можем упаковать ее в композит под названием `COMPA`:
 
-Figure 3.12
+![fig3_12](media/fig3_12.png)
 
-Once we have done this, COMPA can be used by anyone who knows what formats of data may be presented at port IN of COMPA and what formats will be sent out of its ACC and REJ ports. You will notice that it is quite acceptable for our composite to have the same port names as one of its internal components. You might also decide to connect the ACC port inside to the REJ port outside, and vice versa - what you would then have is a Rejector composite process, rather than an Acceptor. Of course COMPA is not a very informative name, and in fact we probably wouldn't bother to make this function a composite unless we considered it a useful tool which we expected to be able to reuse in the future.
+Фрагмент 3.12
 
-Notice also that we have shown the insides of COMPA - from the outside it looks like a regular component with one input port and two output ports, as follows:
+Как только мы это сделаем, `COMPA` может использоваться любым, кто знает, какие форматы данных могут быть представлены на порте `IN` у `COMPA` и какие форматы будут отправлены из его портов `ACC` и `REJ`. Заметьте, нашему композиту вполне приемлемо иметь те же имена портов, что и у одного из его внутренних компонентов. Вы даже можете подключить порт `ACC` внутри к порту `REJ` снаружи, и наоборот - тогда у вас будет составной процесс `Rejector`, а не `Acceptor`. Конечно, `COMPA` - не очень информативное имя, и на самом деле мы, вероятно, не стали бы беспокоиться о том, чтоб сделать эту функцию составной, если бы не считали ее полезным инструментом, который, можно будет повторно использовать в будущем.
 
-Figure 3.13
+Также обратите внимание, что мы показали внутреннюю часть `COMPA` - однако, снаружи он выглядит как обычный компонент с одним входным портом и двумя выходными:
 
-Now, clearly, any port on a composite must have corresponding ports "on the inside". However, the inverse is not required - not all ports on the inside have to be connected on the outside - if an inside component tries to send to an unconnected composite port, it will get a return of "unconnected" or "closed", depending on the implementation.
+![fig3_13](media/fig3_13.png)
 
-We have now introduced informally the ideas of "port", "connection", "elementary component", "composite component" and "information packet".
+Фрагмент 3.13
 
-At this point, we should ask: just what are the things we are connecting together? We have spoken as though they were components themselves, but actually they are uses or occurrences of components. There is no reason why we cannot use the same component many times in the same structure. Let us take the above structure and reverse it. We then get the following:
+Теперь ясно, что любой порт в композите должен иметь соответствующие порты «внутри». Однако обратное не требуется - не все внутренние порты должны быть подключены наружу - если внутренний компонент пытается отправить на неподключенный составной порт, он получит ответ «неподключен» или «закрыт», в зависимости от реализации.
 
-Figure 3.14
+Итак, мы неформально ввели понятия «порт», «соединение», «элементарный компонент», «составной компонент» и «информационный пакет».
+
+Здесь мы должны спросить: что именно мы соединяем вместе? Мы говорили так, ,будто соединяли сами по себе компоненты, но на самом деле это инстансы компонентов. Нет причин, по которым мы не можем использовать один и тот же компонент много раз в одной и той же схеме. Давайте возьмем вышеуказанную схему и обратим ее:
+
+![fig3_14](media/fig3_14.png)
+
+Фрагмент 3.14
 
 Let's attach another FILTER to the REJ port of SELECTOR. Now the picture looks like this:
 
-Figure 3.15
+Фрагмент 3.15
 
 Here we have two occurrences of the FILTER component running concurrently, one "filtering" the accepted IPs from SELECTOR, the other filtering the rejected ones. This is no different from having two copiers in the same office. If we have only one copier, we don't have to identify it further, but if we have more than one, we have to identify which one we mean by describing them or labelling them - we could call one "the big copier" and the other "the little copier", or "copier A" and "copier B". In DFDM we took the function name and qualified it - in THREADS we make what might be called the "in context" function the name, and qualify it to indicate which component we are using. These component occurrences are called processes, and it is time to explain this concept in more depth.
 
@@ -251,7 +260,7 @@ In conventional programming, we talk about a program "performing some function",
 
 We can now make an important distinction: composite components contain patterns of processes, not components. This becomes obvious when you think of a structure like the previous one - the definition of that composite has three nodes, but two of them are implemented by the same component, so they must be different processes. Of course, they don't become "real" processes until they actually run, but the nodes correspond one-to-one with processes, so they can be referred to as processes without causing confusion. Here is the same diagram shown as a composite:
 
-Figure 3.16
+Фрагмент 3.16
 
 When this composite runs, there will be three processes running in it, executing the code of two components.
 
@@ -261,7 +270,7 @@ Just as an FBP application can be thought of as a structure of processes linked 
 
 trailing edge leading edge
 
-Figure 3.17
+Фрагмент 3.17
 
 The moment when the leading edge reaches something that can respond to it is an event. In the same way, every IP has both a data aspect and a control aspect. Not only is an IP a carrier of data, but its moment of arrival at a process is a distinct event. Some data streams consist of totally independent IPs, but most streams are patterns of IPs (often nested, i.e. smaller patterns within larger patterns) over time. As you design your application, you should decide what the various data streams are, and then you will find the processes falling out very naturally. The data streams which tend to drive all the others are the ones which humans will see, e.g. reports, etc., so you design these first. Then you design the processes which generate these, then the processes which generate their input, and so on. This approach to design might be called "output backwards"....
 
@@ -273,7 +282,7 @@ city record, each one followed by
 customer record, each one followed by
 'p' sales detail records for each customer
 
-Figure 3.18
+Фрагмент 3.18
 
 You will notice that this is in fact a standard hierarchical structure. The stream is in fact a "linearized" hierarchy, so it can map very easily onto (say) an IMS data base.
 
@@ -289,7 +298,7 @@ We have one more decision to make before we can show how we might use brackets i
 < cust22 detl221 detl222...>>
 etc.
 
-Figure 3.19
+Фрагмент 3.19
 
 In the latter case, we would see:
 
@@ -302,7 +311,7 @@ In the latter case, we would see:
 
 etc.
 
-Figure 3.20
+Фрагмент 3.20
 
 From the point of view of processing, these two conventions are probably equivalent, but I tend to prefer the first one as it includes each customer IP in the same substream as its detail records, and similarly includes each city in the same substream as the customers that belong to that city. As of the time of writing, there is no strongly preferred convention, but you should make sure that all specifications for components which use substreams state which convention is being used. By the way, a very useful technique when processing substreams is the use of "control" IPs to "represent" a stream or substream. Both AMPS and THREADS and some of the versions of DFDM have the concept of a process-related stack, which is used to hold IPs in a LIFO sequence. In Chapter 9, I will be describing how these concepts can be combined.
 
