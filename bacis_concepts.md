@@ -250,46 +250,58 @@ enddo
 
 Фрагмент 3.14
 
-Let's attach another FILTER to the REJ port of SELECTOR. Now the picture looks like this:
+Давайте подключим еще один `FILTER` к порту `REJ` у `SELECTOR`:
+
+![fig3_14](http://www.jpaulmorrison.com/fbp/Fig3.15.gif)
 
 Фрагмент 3.15
 
-Here we have two occurrences of the FILTER component running concurrently, one "filtering" the accepted IPs from SELECTOR, the other filtering the rejected ones. This is no different from having two copiers in the same office. If we have only one copier, we don't have to identify it further, but if we have more than one, we have to identify which one we mean by describing them or labelling them - we could call one "the big copier" and the other "the little copier", or "copier A" and "copier B". In DFDM we took the function name and qualified it - in THREADS we make what might be called the "in context" function the name, and qualify it to indicate which component we are using. These component occurrences are called processes, and it is time to explain this concept in more depth.
+Здесь у нас есть два экземпляра компонента `FILTER`, работающих одновременно: один «фильтрует» принятые IP от `SELECTOR`, другой - отклоненные. Это ничем не отличается от двух копировальных аппаратов в одном офисе. Если у нас есть только один копировальный аппарат, нам не нужно идентифицировать, но если у нас более одного, мы должны определить, какой из них мы имеем в виду - мы могли бы назвать один «большой копировальный аппарат» и другой «маленький копировальный аппарат», или «копировальный аппарат А» и «копировальный аппарат Б». Эти "инстансы компонентов" называются процессами, и пора более подробно объяснить эту концепцию.
 
-In conventional programming, we talk about a program "performing some function", but actually it is the machine which does the function - the program just encodes the rules the machine is to follow. In conventional programming, much of the time we do not have to worry about this, but in FBP (as also in operating system design and a number of other specialized areas of computing) we have to look a little more closely at this idea. In FBP, the different components are executed by the CPU in an interleaved manner, where the CPU gives time to each component in turn. Since you can have multiple occurrences of the same component, with each occurrence being given its own series of time slots and its own working storage, we need a term for the thing which the CPU is allocating time slices to - we call this a "process". The process is what the CPU "multithreads" (some systems distinguish between processes and threads, but we will only use the term "process" in what follows). Since multiple processes may execute the same code, we may find situations where the first process using the code gets suspended, the code is again entered at the top by another process, which then gets suspended, and then the first process resumes at the point where it left off. Obviously, the program cannot modify its own code (unless it restores the code before it can be used by another process), otherwise strange things may happen! In programming terms, the code has to be read-only. In IBM's MVS, this kind of program is called reentrant, which is not quite as stringent as read-only, but read-only implies reentrancy, and I have found that making code read-only is a good programming discipline, as it makes a clear distinction between variable data, on the one hand, and program code together with constants, on the other. Although this may sound arcane, it is not really that far removed from everyday life. Imagine two people reading a poster at the same time: neither of them needs to be aware of the point in the text the other one has reached. Either one of the readers can go away for a while and come back later and resume at the point where he or she left off, without interfering in the least with the other reader. This works because the poster does not change during the reading process. If, on the other hand, one person changes the poster while the other is trying to read it, they would have to be synchronized in some way, to prevent utter confusion on the part of the reader, at least.
+В традиционном программировании мы говорим о программе, «выполняющей некоторую функцию», но на самом деле эту функцию выполняет машина - программа просто кодирует правила, которым машина должна следовать. В традиционном программировании большую часть времени нам не нужно об этом беспокоиться, но в FBP (а также при проектировании операционных систем и ряде других специализированных областей вычислений) мы должны более внимательно изучить эту идею. В FBP различные компоненты выполняются ЦП с чередованием, при этом ЦП по очереди отдает время каждому компоненту. Поскольку у вас может быть несколько экземпляров одного и того же компонента, причем каждому экземпляру дается собственная серия временных интервалов и собственное рабочее хранилище, нам нужен термин для того, для чего ЦП выделяет временные отрезки - мы называем это «процессом». Процесс - это то, что ЦП многопоточно выполняют (некоторые системы различают процессы и потоки, но в дальнейшем мы будем использовать только термин «процесс»).
 
-We can now make an important distinction: composite components contain patterns of processes, not components. This becomes obvious when you think of a structure like the previous one - the definition of that composite has three nodes, but two of them are implemented by the same component, so they must be different processes. Of course, they don't become "real" processes until they actually run, but the nodes correspond one-to-one with processes, so they can be referred to as processes without causing confusion. Here is the same diagram shown as a composite:
+Поскольку несколько процессов могут выполнять один и тот же код, мы можем обнаружить ситуации, когда первый процесс, использующий код, приостанавливается, затем код снова запускается сверху другим процессом, который затем приостанавливается, а затем первый процесс возобновляется в точке, где остановился. Очевидно, процесс не может изменять свой собственный код (если только он не восстанавливает свой код до того, как тот может быть использован другим процессом), иначе могут произойти странные вещи! С точки зрения программирования, код должен быть доступен только для чтения. В IBM MVS такая программа называется реентерабельной, что не так строго, как только для чтения, но "только для чтения" подразумевает повторный вход, и я обнаружил, что создание кода, доступного только для чтения - хорошая дисциплиной программирования, поскольку это даёт четкое разделение между данными и кодом (с константами), с другой.
+Хотя это может показаться загадочным, на самом деле это не так уж далеко от повседневной жизни. Представьте, что два человека одновременно читают плакат: ни один из них не должен осознавать, какой момента в тексте достиг другой. Любой из читателей может уйти на некоторое время и вернуться позже и продолжить с того места, где он/она остановились, ни в малейшей степени не мешая другому читателю. _Это работает, потому что плакат не меняется в процессе чтения_. Если, с другой стороны, один человек меняет плакат, в то время как другой пытается его прочитать, их придется каким-то образом синхронизировать, чтобы, по крайней мере, предотвратить полную путаницу со стороны читателя.
+
+Теперь мы можем сделать важное различие: _составные компоненты содержат шаблоны процессов, а не компоненты_. Это становится очевидным, когда вы думаете о структуре, подобной предыдущей - определение этой композиции имеет три узла, но два из них реализуются одним и тем же компонентом, поэтому они должны быть разными процессами. Конечно, они не становятся «настоящими» процессами до тех пор, пока не запустятся, но узлы однозначно соответствуют процессам, поэтому их можно назвать процессами, не вызывая путаницы. Вот та же диаграмма, показанная в виде составного компонента:
+
+![fig3_16](http://www.jpaulmorrison.com/fbp/Fig3.16.gif)
 
 Фрагмент 3.16
 
-When this composite runs, there will be three processes running in it, executing the code of two components.
+При запуске этого композита в нем будут запущены 3 процесса, выполняющие код 2 компонентов.
 
-Lastly, I would like to introduce the concepts of data streams and brackets. A "stream" is the entire series of IPs passing across a particular connection. Normally a stream does not exist all at the same time - the stream is continually being generated by one process and consumed by another, so only those IPs which can fit into the connection capacity could possibly exist at the same time (and perhaps not even that many). Think of a train track with tunnels at various points. Now imagine a train long enough that the front is in one tunnel while the end is still in the previous tunnel. All you can see is the part of the train on the track between the tunnels, which is a kind of window showing you an ever-changing section of the train. The IP stream as a whole is a well-defined entity (rather like the train) with a defined length, but all that exists at any point in time is the part traversing the connection. This concept is key to what follows, as it is the only technique which allows a very long stream of data to be processed using a reasonable amount of resources.
+Наконец, я хотел бы представить концепции _потоков_ (stream) данных и _скобок_ (brackets). «Поток» - это вся целиком серия IP, проходящих через определенное соединение. Обычно поток не существует единовременно - _поток постоянно генерируется одним процессом и потребляется другим_, поэтому только те IP, которые могут соответствовать пропускной способности соединения, могут существовать одновременно (и их, как правило, не так много). Представьте себе железнодорожный путь с туннелями в разных точках. Теперь представьте поезд, достаточно длинный, чтобы его передняя часть находилась в одном туннеле, а конец - в предыдущем. Все, что вы можете увидеть, - это часть поезда на пути между туннелями, которая представляет собой своего рода окно, показывающее вам постоянно меняющуюся секцию поезда. _IP-поток_ в целом представляет собой четко определенный объект (скорее, как поезд) с определенной длиной, но все, что существует в любой момент времени, - это часть, пересекающая соединение. Эта концепция является ключевой для дальнейшего, поскольку это единственный метод, который позволяет обрабатывать очень длинный поток данных с использованием разумного количества ресурсов.
 
-Just as an FBP application can be thought of as a structure of processes linked by connections, an application can also be thought of as a system of streams linked by processes. Up to now, we have sat on a process and watched the data as it is consumed or generated. Another, highly productive way of looking at your application is to sit on an IP and watch as it travels from process to process through the network, from its birth (creation) to its death (destruction). As it arrives at each process, it triggers an activity, much like the electrical signal which causes your phone to ring. Electrical signals are often shown in the textbooks like this:
+Подобно тому, как приложение _FBP можно рассматривать как структуру процессов, связанных соединениями, приложение также можно рассматривать как систему потоков, связанных процессами_. До сих пор мы сидели в процессе и наблюдали за данными, как они потребляются или генерируются. Другой, очень продуктивный способ взглянуть на приложение - это "сесть" на IP и наблюдать, как он перемещается от процесса к процессу по сети, от своего рождения до смерти. Когда он поступает в процесс, он запускает действие, похожее на электрический сигнал, что заставляет ваш телефон звонить. Электрические сигналы часто изображают в учебниках так:
 
-trailing edge leading edge
+![fig3_17](http://www.jpaulmorrison.com/fbp/waveform.gif)
 
 Фрагмент 3.17
 
-The moment when the leading edge reaches something that can respond to it is an event. In the same way, every IP has both a data aspect and a control aspect. Not only is an IP a carrier of data, but its moment of arrival at a process is a distinct event. Some data streams consist of totally independent IPs, but most streams are patterns of IPs (often nested, i.e. smaller patterns within larger patterns) over time. As you design your application, you should decide what the various data streams are, and then you will find the processes falling out very naturally. The data streams which tend to drive all the others are the ones which humans will see, e.g. reports, etc., so you design these first. Then you design the processes which generate these, then the processes which generate their input, and so on. This approach to design might be called "output backwards"....
+Момент, когда передний угол достигает чего-то, что может на это отреагировать - это событие. Точно так же каждый IP имеет как аспект данных, так и аспект управления. IP не только является носителем данных, но и момент его поступления в процесс - отдельное событие. Некоторые потоки данных состоят из полностью независимых IP, но большинство потоков представляют собой _шаблоны IP_ (часто вложенные, то есть меньшие шаблоны в более крупных шаблонах) с течением времени. При разработке вы должны решить, какие потоки данных будут в вашем приложении, и тогда процессы породятся естественным путём. Потоки данных, которые имеют тенденцию управлять всеми остальными - это те потоки, которые люди увидят, например отчеты и т.д. Поэтому создаете сначала их. Затем вы проектируете процессы, которые их генерируют, затем процессы, которые генерируют свои входные данные, и так далее. Такой подход к дизайну можно назвать «выводом в обратном направлении».
 
-Clearly a stream can vary in size all the way from a single IP to many millions, and in fact it is unusual for all the IPs in the stream to be of the same type. It is much more common for the stream to consist of repeating patterns, e.g. the stream might contain multiple occurrences of the following pattern: a master record followed by 0 or more detail records. You often get patterns within patterns, e.g.
+Очевидно, что поток может различаться по размеру от одного IP до многих миллионов, и на самом деле редкость, чтобы все IP в потоке были одного типа. Гораздо чаще поток состоит из повторяющихся шаблонов, например поток может содержать несколько экземпляров следующего шаблона: основная запись, за которой следует 0 или более подробных записей. Вы часто получаете шаблоны в шаблонах, например
 
+```
 'm' patterns of:
-city record, each one followed by
-'n' patterns of:
-customer record, each one followed by
-'p' sales detail records for each customer
+    city record, each one followed by
+    'n' patterns of:
+        customer record, each one followed by
+            'p' sales detail records for each customer
+```
 
 Фрагмент 3.18
 
 You will notice that this is in fact a standard hierarchical structure. The stream is in fact a "linearized" hierarchy, so it can map very easily onto (say) an IMS data base.
 
-To simplify the processing of these stream structures, FBP uses a special kind of IP called a "bracket". These enable an upstream process to insert grouping information into the stream so that downstream processes do not have to constantly compare key fields to determine where one group finishes and the next one starts. As you might expect, brackets are of two types: "open brackets" and "close brackets". A group of IPs surrounded by a pair of brackets is called a "substream". In THREADS, we use IPs with "type" of "(" and ")" for open and close brackets, respectively.
+Вы заметите, что на самом деле это стандартная иерархическая структура. Фактически поток представляет собой «линеаризованную» иерархию, поэтому его можно очень легко отобразить (скажем) в базу данных IMS.
 
-We have one more decision to make before we can show how we might use brackets in the above example. We have two cases where a single IP of one type is followed by a variable number of IPs of a different type (or substreams). The question is whether the open bracket should go before the single IP or after it. In the former case, we might see the following (I'll use brackets to represent bracket IPs):
+Чтобы упростить обработку этих потоковых структур, FBP использует особый вид IP, называемый «скобкой». Это позволяет восходящему процессу вставлять информацию о группировке в поток, чтобы последующим процессам не приходилось постоянно сравнивать ключевые поля, чтобы определить, где заканчивается одна группа и начинается следующая. Как и следовало ожидать, скобки бывают двух типов: «открывающие скобки» и «закрывающие скобки». Группа IP, заключенная в квадратные скобки, называется «субпотоком» (substream). В THREADS мы используем IP с "типом" `(` и `)` для открытых и закрытых скобок соответственно.
 
+Нам нужно принять еще одно решение, прежде чем мы сможем показать, как мы можем использовать скобки в приведенном выше примере. У нас есть два случая, когда за одним IP одного типа следует переменное количество IP другого типа (или субпотоков). Вопрос в том, должна ли открытая скобка стоять перед отдельным IP или после него. В первом случае мы могли бы увидеть следующее (я буду использовать скобки для обозначения IP-адресов в скобках):
+
+```
 < city1
 < cust11 detl111 detl112...>
 < cust12 detl111 detl112...>>
@@ -297,44 +309,38 @@ We have one more decision to make before we can show how we might use brackets i
 < cust21 detl211 detl122...>
 < cust22 detl221 detl222...>>
 etc.
+```
 
 Фрагмент 3.19
 
-In the latter case, we would see:
+В последнем случае мы увидим:
 
-    city1 <
-       cust11 < detl111 detl112...>
-       cust12 < detl111 detl112...>>
-    city2 <
-       cust21 < detl211 detl122...>
-       cust22 < detl221 detl222...>>
-
-etc.
+```
+city1 <
+    cust11 < detl111 detl112...>
+    cust12 < detl111 detl112...>>
+city2 <
+    cust21 < detl211 detl122...>
+    cust22 < detl221 detl222...>>
+etc
+```
 
 Фрагмент 3.20
 
-From the point of view of processing, these two conventions are probably equivalent, but I tend to prefer the first one as it includes each customer IP in the same substream as its detail records, and similarly includes each city in the same substream as the customers that belong to that city. As of the time of writing, there is no strongly preferred convention, but you should make sure that all specifications for components which use substreams state which convention is being used. By the way, a very useful technique when processing substreams is the use of "control" IPs to "represent" a stream or substream. Both AMPS and THREADS and some of the versions of DFDM have the concept of a process-related stack, which is used to hold IPs in a LIFO sequence. In Chapter 9, I will be describing how these concepts can be combined.
+С точки зрения обработки, эти два соглашения, вероятно, эквивалентны, но я предпочитаю первое, поскольку оно включает каждый IP клиента в тот же субпоток, что и его подробные записи, и аналогичным образом включает каждый город в тот же субпоток, что и клиенты, которые принадлежат этому городу. На момент написания не существовало строго предпочтительного соглашения, но вы должны убедиться, что во всех спецификациях для компонентов, которые используют субпотоки, указано, какое соглашение используется. Между прочим, очень полезным методом при обработке субпотоков является использование «контрольных» IP для «представления» потока или субпотока. И AMPS, и THREADS, и некоторые версии DFDM имеют концепцию связанного с процессом стека, который используется для хранения IP в последовательности [LIFO](https://en.wikipedia.org/wiki/LIFO). В главе 9 я опишу, как эти концепции могут быть объединены.
 
-We have now introduced the following concepts:
+Итак, мы ввели следующие концепции:
 
-    process
+- Процесс
+- Компонент (составной и элементарный)
+- Информационный пакет (IP)
+- Структура
+- Соединение
+- Порт и Порт-элемент
+- Поток
+- Субпоток
+- Скобки
 
-    component (composite and elementary)
+Обычно на этом этапе в традиционном руководстве по программированию мы оставляем вас для самостоятельного написания программ. Это так же неразумно, как ожидать, будто инженер начнет строить мосты, почитав в учебниках о балках и заклепках. FBP - это инженерная дисциплина, и на основе вышеупомянутых концепций имеется накопленный опыт, которым вы можете и должны воспользоваться. Конечно, вы будете разрабатывать свои собственные инновации, которые захотите распространить среди сообщества FBP, но они будут построены на основе существующих знаний. Вы даже можете решить, что что-то из уже сделанного неверно, и это тоже стандарт инженерной дисциплины. Исаак Ньютон сказал: «Если я видел дальше, чем другие люди, то это потому, что я стоял на плечах гигантов». Кто-то еще сказал о программировании (обычном, а не FBP): «Мы не стоим на их плечах, мы стоим на их цыпочках!» Программисты теперь могут перестать носить обувь со стальным носком!
 
-    information packet (IP)
-
-    structure
-
-    connection
-
-    port and port element
-
-    stream
-
-    substream
-
-    bracket
-
-Normally at this stage in a conventional programming manual we would leave you to start writing programs on your own. However, this is as unreasonable as expecting an engineer to start building bridges based on text-book information about girders and rivets. FBP is an engineering-style discipline, and there is a body of accumulated experience based on the above concepts, which you can and should take advantage of. Of course, you will develop your own innovations, which you will want to disseminate into the community of FBP users, but this will be built on top of the existing body of knowledge. You may even decide that some of what has gone before is wrong, and that is standard in an engineering-type discipline also. Isaac Newton said: "If I have seen further than other men, it is because I have stood on the shoulders of giants." Someone else said about (conventional, not FBP) programming: "We do not stand on their shoulders; we stand on their toes!" Programmers can now stop wearing steel-toed shoes!
-
-Before we can see how to put these concepts together to do real work, two related ideas remain to be discussed: the design of reusable components and parametrization of such components (see the next chapter).
+Прежде чем мы сможем увидеть, как объединить эти концепции для выполнения реальной работы, нам остается обсудить две связанные идеи: проектирование повторно используемых компонентов и параметризацию таких компонентов (см. Следующую главу).
