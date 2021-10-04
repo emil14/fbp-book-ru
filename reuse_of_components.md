@@ -56,71 +56,180 @@
 
 Как мы узнаем, полезен ли инструмент? Единственный способ - измерить его использование. Будут ли люди использовать это? Они сделают это, если он умещается в руке, и если вы окажете поддержку. Это, в свою очередь, означает, что у вас должна быть инфраструктура, позволяющая вашей компании использовать преимущества этой новой технологии, а также меры и стимулы, чтобы побудить людей двигаться в правильном направлении.
 
-There is also the opposite question: what if the tool is "less than perfect"? Just as with real tools, there is no perfect tool - there are only tools which fit your hand more or less conveniently. Like many programmers who tend to be perfectionists, you may be tempted to postpone putting something on the market because you feel it isn't finished yet. The question should be: is it useful as it is? You can always enhance it as time goes on, provided you keep the interfaces stable (or provide "expansion ports" but maintain upward compatibility). In fact, after it has been in use for a while, you may find that the extensions people really want are not at all what you expected. Since your reusable component will hopefully be in widespread use by this time, it is important that you allow extension while maintaining upward compatibility. In FBP, the fact that ports are named helps you to do this; also parameters (described in the next chapter) should be designed to be extendible. Parameters can be in string format, with delimiters, or, if fixed form, it is a good idea to insert a few zero bits - these can always to changed to ones to indicate that there is an extension portion.
+Возникает и обратный вопрос: а что, если инструмент «не идеален»? Как и в случае с настоящими инструментами, нет идеального инструмента - есть только инструменты, которые более или менее удобно подходят для вашей руки. Как и многие программисты, склонные к перфекционизму, у вас может возникнуть соблазн отложить выпуск чего-то на рынок, потому что вы чувствуете, что это еще не закончено. Возникает вопрос: а насколько это полезно? Вы всегда можете улучшить его с течением времени, при условии, что вы сохраните стабильные интерфейсы (или предоставите «порты расширения», но сохраните [восходящую совместимость](https://en.wikipedia.org/wiki/Forward_compatibility)). Фактически, по прошествии некоторого времени вы можете обнаружить, что расширения, которые действительно нужны людям, совсем не то, что вы ожидали. Поскольку мы надеемся, что к этому времени ваш многоразовый компонент будет широко использоваться, важно, чтобы вы разрешили расширение, сохраняя при этом восходящую совместимость. В FBP в этом помогает то, что порты названы; также параметры (описанные в следующей главе) должны быть разработаны с возможностью расширения. Параметры могут быть в строковом формате с разделителями или, если форма фиксирована, рекомендуется вставить несколько нулевых битов - их всегда можно изменить на единицы, чтобы указать, что существует часть расширения.
 
-Another kind of modification which will happen to your modules occasionally is error correction. It is certainly a pleasurable feeling to know that you have improved a component which many people are or will be using, and you might think that your users will welcome the change with open arms. Unfortunately some of your users may have adjusted to the error, and will need to be convinced that you know what is right for them. The other thing users do is take advantage of undocumented features. I talked about a tool fitting the hand - it may fit the hand, even with an error in it. One team found an error in one of the DFDM components, but instead of telling us about it, they carefully compensated for it. When we fixed it, their programs stopped working! I think they were quite indignant for a while until everybody realized what had happened. We had to spend some time explaining that everyone would be much better off if we fixed the bug rather than leaving it the way it was! There is a very important rule which you should impress on your users: If it isn't documented, don't trust it. IBM learned the value of this one by bitter experience and has accepted its wisdom since the day some bright user discovered an undocumented instruction on one of the 700-series machines. When IBM started making invalid instructions result in exception conditions, I'm told quite a few programs in universities and other places stopped working!
+Другой вид модификации, которая время от времени будет происходить с вашими модулями, - это исправление ошибок. Безусловно, приятно знать, что вы улучшили компонент, который многие люди используют или будут использовать, и вы можете подумать, что ваши пользователи будут приветствовать это изменение с распростертыми объятиями. К сожалению, некоторые из ваших пользователей, возможно, приспособились к ошибке, и их нужно будет убедить в том, что вы лучше знаете, что для них подходит. Еще пользователи могут воспользоваться недокументированными фичами. Я говорил об инструменте, который подходит для руки - он может поместиться в руке, даже если в нем есть ошибка. Одна команда обнаружила ошибку в одном из компонентов DFDM, но нам не сообщили. Когда мы исправили её, их программы перестали работать! Думаю, какое-то время они были возмущены, пока не осознали, что произошло. Нам пришлось потратить некоторое время, чтоб объяснить, что всем будет намного лучше, если мы исправим ошибку, а не оставим все как есть! Есть очень важное правило, которое вы должны внушить своим пользователям: _если что-то не задокументировано, не доверяйте этому_. IBM узнала ценность этого на горьком опыте и приняла эту мудрость с того дня, как какой-то умный пользователь обнаружил недокументированную инструкцию на одной из [машин серии 700](https://en.wikipedia.org/wiki/IBM_700/7000_series). Когда IBM начала делать недопустимые инструкции, приводящие к возникновению исключений, мне сказали, что довольно много программ в университетах и других местах перестали работать!
 
-The next question is: how will people find out about these components? There is a common misconception that reusable componentry doesn't work unless you have an elaborate catalogue, which people can interrogate to find the tool they want. On the other hand, Wayne Stevens has pointed out that most examples of reuse in everyday life are done very naturally without any catalogue. We know by heart most of the things we use commonly. Let's say you go into a hardware store because you want to attach a wood base onto a ceramic pot - you will be familiar with half a dozen types of fastener: glue, nails, screws, rivets, etc. Most of the time you will know exactly what kind of glue to use. In this case, let's say you are not quite sure what is best. You still don't have to scan the entire store - most of the time, you can go right to the shelf and start reading labels. What do you do if you are not sure where in the store to go to? You ask a store clerk, who may in turn pass you onto someone who is an expert in a particular area. If your requirements are really unusual, the clerk may have to consult a catalogue, but this is likely to be a rare case. The point is that effective reuse doesn't require catalogues, although they can certainly help.
+Следующий вопрос: как люди узнают об этих компонентах? Существует распространенное заблуждение, что повторно используемые компоненты не работают, если у вас нет тщательно продуманного каталога, который люди могут опросить, чтобы найти нужный инструмент. С другой стороны, Уэйн Стивенс указал, что большинство примеров повторного использования в повседневной жизни происходит очень естественно, без какого-либо каталога. Мы знаем наизусть большинство вещей, которыми обычно пользуемся. Допустим, вы зашли в строительный магазин, потому что хотите прикрепить деревянную основу к керамическому горшку - вы будете знакомы с полдюжиной видов крепежа: клей, гвозди, шурупы, заклепки и т.д. В большинстве случаев вы будете знать какой именно клей использовать. В этом случае, допустим, вы не совсем уверены, что лучше. Вам по-прежнему не нужно сканировать весь магазин - в большинстве случаев вы можете подойти прямо к полке и начать читать этикетки. Что делать, если вы не знаете, куда идти в магазине? Вы спрашиваете продавца в магазине, который, в свою очередь, может передать вас кому-то, кто является экспертом в определенной области. Если ваши требования действительно необычны, клерку, возможно, придется обратиться к каталогу, но это, скорее всего, редкий случай. Дело в том, что для эффективного повторного использования каталоги не нужны, хотя они, безусловно, могут помочь.
 
-To try to measure the productivity gains we were getting from DFDM within IBM Canada, we kept statistics on the amount of reuse taking place over a number of projects. The figures for three projects are shown in the following diagram (the numbers relate to components):
+Чтобы попытаться измерить прирост производительности, который мы получили от DFDM в IBM Canada, мы вели статистику по количеству повторного использования по ряду проектов. Цифры для трех проектов показаны на следующей диаграмме (числа относятся к компонентам):
 
-PROJECT Type Unique Occurrences Reuse Factor 1 / Figure of Merit
-A Project 133 184 1.4 3.7
+<table width="100%">
+  <tbody>
+    <tr>
+      <th>ПРОЕКТ</th>
+      <th>Тип</th>
+      <th>Уникальный</th>
+      <th>Вхождения</th>
+      <th>Фактор переиспользования</th>
+      <th>1 / <a href="https://en.wikipedia.org/wiki/Figure_of_merit">Показатель заслуг</a></th>
+    </tr>
+    <tr>
+      <td>A</td>
+      <td>Проект</td>
+      <td>133</td>
+      <td>184</td>
+      <td>1.4</td>
+      <td style="font-weight: bold;">3.7</td>
+    </tr>
+    <tr>
+      <td><br>
+      </td>
+      <td>Общее назначение</td>
+      <td>21</td>
+      <td>305</td>
+      <td>14.5</td>
+    </tr>
+    <tr>
+      <td><br>
+      </td>
+      <td>Total</td>
+      <td>154</td>
+      <td>489</td>
+      <td>3.2</td>
+    </tr>
+    <tr>
+      <td><br>
+      </td>
+      <td style="font-weight: bold;">GP/T</td>
+      <td style="font-weight: bold;">0.14</td>
+      <td style="font-weight: bold;">0.62</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td>B</td>
+      <td>Проект</td>
+      <td>46</td>
+      <td>48</td>
+      <td>1.0</td>
+      <td style="font-weight: bold;">7.7</td>
+    </tr>
+    <tr>
+      <td><br>
+      </td>
+      <td>Общее назначение</td>
+      <td>17</td>
+      <td>306</td>
+      <td>18.0</td>
+    </tr>
+    <tr>
+      <td><br>
+      </td>
+      <td>Total</td>
+      <td>63</td>
+      <td>354</td>
+      <td>5.6</td>
+    </tr>
+    <tr>
+      <td><br>
+      </td>
+      <td style="font-weight: bold;">GP/T</td>
+      <td style="font-weight: bold;">0.27</td>
+      <td style="font-weight: bold;">0.86</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td>C</td>
+      <td>Проект</td>
+      <td>2</td>
+      <td>54</td>
+      <td>27.0</td>
+      <td style="font-weight: bold;">135.0</td>
+    </tr>
+    <tr>
+      <td><br>
+      </td>
+      <td>Общее назначение</td>
+      <td>8</td>
+      <td>216</td>
+      <td>27.0</td>
+    </tr>
+    <tr>
+      <td><br>
+      </td>
+      <td>Total</td>
+      <td>10</td>
+      <td>270</td>
+      <td>27.0</td>
+    </tr>
+    <tr>
+      <td><br>
+      </td>
+      <td style="font-weight: bold;">GP/T</td>
+      <td style="font-weight: bold;">0.80</td>
+      <td style="font-weight: bold;">0.80</td>
+    </tr>
+  </tbody>
+</table>
 
-    Gen Purpose 	21 	305 	14.5
+В этой таблице «проект» означает компоненты, закодированные специально для рассматриваемого проекта, а «общее назначение» означает готовые компоненты (уже доступные и официально поддерживаемые). «Уникальный» означает отдельные компоненты (отдельные фрагменты кода), а «вхождения» означает общее количество процессов (экземпляров компонентов или сетевых узлов). Таким образом, в проекте A использовалось 154 отдельных компонента, из которых 21 был выпущен с полки, но на него приходилось 305 из 489 процессов (около 3/5). GP / T означает общее назначение как долю от общего количества, и интересно сравнить GP / T для уникальных компонентов с GP / T для вхождений компонентов.
 
-    Total 	154 	489 	3.2
+«Показатель заслуг», если использовать фразу Боба Кендалла (Kendall 1988), рассчитывается следующим образом: количество закодированных в проекте компонентов, деленное на общее количество процессов. Поскольку _первая цифра представляет объем работы, которую должен выполнить программист (помимо объединения сети), а вторая цифра представляет объем работы, которую выполняет программа_, мы посчитали, что показатель качества является довольно хорошей мерой. объем реального повторного использования. DFDM использовался в этом магазине около 2-3 лет, и у нас было около 40 готовых компонентов, так что довольно много общих задач можно было выполнять без необходимости кодирования каких-либо новых компонентов. Однако, когда программисту приходилось кодировать компоненты, вы заметите, что довольно часто этот код также можно было повторно использовать, давая коэффициент повторного использования больше 1 (в Project C был коэффициент 27,0). В третьем примере на приведенной выше диаграмме программисту нужно было написать только 2 компонента, хотя в его программе было 270 отдельных процессов. (Вы, наверное, догадались, что этот проект включал запуск 27 разных файлов через одни и те же 10 процессов - так что он проделал большую работу с очень небольшими затратами усилий).
 
-    GP/T 	0.14 	0.62
+(*В «Figure of Merit» Боба Кендалла - чем меньше, тем лучше. В этой версии я показал обратное, поскольку кажется более интуитивным, когда большее число указывает на лучшее повторное использование.) 
 
-B Project 46 48 1.0 7.7
+Хотя сначала мы думали, что этот последний случай был всего лишь причудой, мы нашли довольно много приложений, которые не сильно отличались (например, письмо Реджа, цитируемое во введении).
 
-    Gen Purpose 	17 	306 	18.0
+Вот некоторые цифры из оценки DFDM, приведенные в начале этой главы:
 
-    Total 	63 	354 	5.6
+- Все функции пилотного приложения DFDM выполняются 30 уникальными сопрограммами (это количество сопрограмм, с которыми необходимо ознакомиться человеку, чтобы понять функцию приложения).
+- В общей сложности 95 экземпляров этих 30 сопрограмм составляют приложение, что обеспечивает коэффициент повторного использования 3:1.
+- Эти 95 сопрограмм используются за счет использования подсетей и сетей CNS [Compiled Network Specification] для выполнения эквивалентной работы 225 "сопрограмм без использования заемных средств" (unleveraged coroutines).
 
-    GP/T 	0.27 	0.86
+Некоторые компании пытались побудить людей писать обобщенный код, предлагая им деньги или похвалу. Я хотел бы дать им один совет: вам нужно отслеживать не количество написанных кем-то компонентов, а то, как часто они используются. Уместная аналогия - система гонораров в издательском деле. Каждый раз, когда используется модуль, автор должен получать какой-то жетон, будь то деньги или признание. Это гарантирует, что ваша компания не накопит коллекцию замечательных гаджетов [Руба Голдберга](https://en.wikipedia.org/wiki/Rube_Goldberg), которые будут лежать на полке и пылиться.
 
-C Project 2 54 27.0 135.0
+Допустим, вы все убеждены в том, что код многократного использования - это правильный путь - как мы можем внедрить его в фирме? Вы обнаружите (если только все ваши люди не суперальтруисты), что самый большой враг повторного использования - это не технологии, а человеческая психология. В то время как многие люди с энтузиазмом примут новые идеи, другие будут им сопротивляться, и по разным причинам. Люди, которые научились доставлять приложения в сжатые сроки, очень часто чувствуют, что они должны любой ценой сохранять контроль над всем, что они используют, и на самом деле весь их опыт научил их, что этот подход работает. Компоненты, разработанные другими, будут на своем критическом пути, и они будут находиться между желанием уменьшить свои собственные усилия за счет использования предварительно протестированных компонентов и опасением, что компоненты, на которые они полагаются, не будут готовы вовремя или сломаются. Не будут не поддерживаться при изменении окружающей среды. Они должны убедиться, что кто-то поддержит эти компоненты - при необходимости, круглосуточно. Это может быть необязательно технически, но может быть очень необходимо психологически!
 
-    Gen Purpose 	8 	216 	27.0
+Другой источник сопротивления состоит в том, что некоторые _программисты любят биты и байты_ и не хотят становиться простыми объединителями предварительно закодированных компонентов! У этих людей есть своя роль - писать компоненты для спецификаций. Как мы уже говорили выше, появляются две разные роли: разработчики компонентов и пользователи компонентов. На мой взгляд, последним нужны навыки, очень похожие на те, которые требуются аналитикам. Им необходимо иметь возможность разговаривать с пользователями, собирать требования и даже создавать системы или прототипы систем. Для более сложных деталей или деталей, которые должны работать лучше, они могут передать детали производителям компонентов. Это область, в которой могут проявить себя программисты («Мерлины», как их называет мой друг). В некотором смысле компонент становится воплощением их конкретных навыков или знаний. Я обнаружил, что имеет смысл «строже» относиться к внешним спецификациям и «слабее» к тому, как код построен внутри. Это позволяет им выражать свои творческие способности, продолжая при этом служить потребностям организации в целом. Конечно, это не должно быть написано настолько плохо, чтобы оно не работало хорошо! И компонент обязательно должен выполнять функции в соответствии со спецификациями! Как только это будет подтверждено, _ваша единственная забота - ремонтопригодность_. Обобщенный код должен быть поддерживаемым, но вам, вероятно, не нужно контролировать формат каждой внутренней мелочи!
 
-    Total 	10 	270 	27.0
+Однажды программист сказал мне: «Мне не нравится DFDM, потому что я не получаю дампов»! В то время я понял, что это означает, что, _поскольку программы, созданные с использованием FBP, не дают сбоев, программистам трудно понять, как они работают. Незнание, как работает двигатель вашего автомобиля, заставляет вас нервничать?_ Вероятно, это действительно так влияет на некоторых людей, но большинству из нас все равно. Позже я понял, что это также поднимает очень фундаментальный вопрос о доверии - если пользователи пакета не доверяют пакету или его поставщику (на самом деле то же самое), они не будут счастливы... Доверие хрупко: трудно наращивать и легко повредить.
 
-    GP/T 	0.80 	0.80
+Предположим, ваша компания убедилась в том, что разработчики не должны продолжать «изобретать велосипед», но, как и большинство компаний, вы достигли только стадии, когда вы поддерживаете библиотеку общих подпрограмм. Как добиться формализованного совместного использования компонентов? Предположим, я узнал, что Джулия работает над модулем, который довольно близок к тому, что я хочу, но требует некоторой доработки в соответствии с моими потребностями. В большинстве магазинов мы даже не знаем, как это назвать. Компании, которые только начали бороться со стандартами именования, часто думают, что имена модулей должны начинаться с кода проекта. Например, если я управляю проектом ABC, то я могу назвать все свои модули ABC-something. Таким образом, мне не нужно беспокоиться о конфликте имен моих модулей с именами других проектов. Даже в имена библиотек часто встроена буква ABC! Итак, даже для того, чтобы найти код, мы обычно должны иметь какое-то соглашение об именах в масштабе всего предприятия. Следующий вопрос: кто занимается модификацией кода и кто за это платит? Что, если расписание Джулии соскользнет и начнет влиять на мое расписание? Даже если все будет хорошо, кто будет поддерживать, документировать и поддерживать?
 
-In this chart, "project" means components coded specifically for the project in question, while "general purpose" means components that are off-the-shelf (already available and officially supported). "Unique" means separate components (separate pieces of code), while "occurrences" means total number of processes (component occurrences or network nodes). Thus project A used 154 distinct components, of which 21 came off the shelf, but accounted for 305 of the 489 processes (about 3/5). GP/T means General Purpose as a fraction of Total, and it is interesting to compare the GP/T for unique components against the GP/T for component occurrences.
+Многие авторы о повторном использовании соглашаются, что единственное решение - создать независимый отдел для написания и поддержки компонентов. У этого отдела должно быть достаточно ресурсов, чтобы выполнять свою работу должным образом, что также включает рекламу и продажу своего продукта. Одна из тенденций, которой необходимо противостоять, заключается в том, что такие отделы часто занимаются производством сложных, универсальных инструментов для нескольких пользователей или даже ни для кого - они просто думают, что компонент будет аккуратным, и будут беспокоиться о том, чтобы продать их впоследствии. Помните принцип рентабельности инвестиций: компания в целом получит больше прибыли от множества простых инструментов, особенно если они хорошо взаимодействуют друг с другом, а не от нескольких очень сложных. Поскольку хорошие инструменты часто начинаются как модули специального назначения, которые некоторые другие группы сочли полезными, должен быть путь для продвижения таких специальных компонентов в место, где другие люди могут их найти и положиться на них. У нашего централизованного отдела поддержки программного обеспечения должны быть способы избавиться от новых и интересных компонентов, а затем должны быть способы оценить, заинтересованы ли потенциальные клиенты (иначе зачем тратить столько хлопот?). Он также не должен увлекаться написанием или обновлением сложных инструментов, рынок которых ограничен. Это сервисная организация, поэтому она должна быть ориентирована на качество обслуживания, а не просто группа самозваных экспертов, которые знают, что лучше для всех. Он должен стать предпринимательским, но не исключительно ориентированным на прибыль. Короче говоря, он должен следовать хорошей финансовой и инженерной практике. Если это требует серьезных изменений в структуре вашей организации, вам действительно стоит начать как можно скорее!
 
-The "Figure of Merit", to use Bob Kendall's phrase (Kendall 1988), is calculated as follows: number of project-coded components divided by the total number of processes. Since the first figure represents the amount of work a programmer has to do (apart from hooking together the network), while the second figure represents the amount of work the program is doing, we felt that the figure of merit was quite a good measure of the amount of real reuse going on. DFDM had been in use about 2 to 3 years in that shop, and we had about 40 off-the-shelf components available, so quite a lot of the common tasks could be done without having to code up any new components. However, when the programmer did have to code up components, you will notice that quite often this code could also be reused, giving reuse factors greater than 1 (Project C had a factor of 27.0). In the third example in the above chart, the programmer only had to write 2 components, although there were 270 separate processes in his program. (You can probably figure out that this project involved running 27 different files through essentially the same 10 processes - so it did a lot of work, with very little investment of programmer effort!).
+Я считаю, что, если компании не начнут привносить инженерные дисциплины в разработку приложений, они не только не смогут в полной мере использовать потенциал компьютеров, но и станут все более и более загруженными бременем обслуживания старых систем. Вы не можете много сделать со старыми системами - я знаю, я видел много из них - но новые системы могут быть построены таким образом, чтобы их можно было поддерживать. Также должна появиться возможность постепенно преобразовывать старые программы в частичную технологию FBP, а не переписывать с нуля. Один мой начальник назвал это «превращением айсберга в кубики льда»!
 
-[In Bob Kendall's "Figure of Merit", obviously smaller is better! In this version, I have shown the reciprocal as it seems to be more intuitive to have the larger number indicate better reuse.]
+Я считаю, что все настоящие дисциплины следуют своего рода циклу во времени, который можно представить с помощью следующей диаграммы:
 
-Although we thought at first that this last case was just a quirk, we turned up quite a few applications which were not that different from this one (e.g. Rej's letter quoted in the Introduction).
+![fig4_1](http://www.jpaulmorrison.com/fbp/circle.gif)
 
-Here are some figures from an evaluation of DFDM quoted from at the beginning of this chapter:
+Фрагмент 4.1
 
-    All of the function in the DFDM pilot application is performed by 30 unique coroutines (this is the number of coroutines that an individual would need to be familiar with in order to understand the function of the application).
-
-    A total of 95 occurrences of these 30 coroutines make up the application ..... providing a 3:1 reuse ratio.
-
-    These 95 coroutines are leveraged through the use of subnets and CNS [Compiled Network Specification] networks to perform the equivalent work of 225 unleveraged coroutines.
-
-Some companies have tried to encourage people to write generalized code by offering them money or kudos. One counsel I would give them is that you need to monitor not how many components someone has written, but how often it is used. An appropriate analogy is the system of royalties in the publishing industry. Every time a module is used, the author should get some kind of token, be it money or recognition. This will ensure that your company will not accumulate a collection of wonderful, Rube Goldbergish gadgets sitting on the proverbial shelf, gathering dust.
-
-Let us say that you are all convinced that reusable code is the way to go - how do we get it adopted in your particular shop? You will find (unless all your people are super-altruists) that the biggest enemy of reuse is not technology - it is human psychology. While many people will accept the new ideas enthusiastically, others will resist them, and for several different reasons. People who have become good at delivering applications under time pressure very often feel that they must at all costs maintain control of everything they use, and in fact all their experience has taught them that this approach works. Components developed by others will be on their critical path, and they will be pulled between the desire to reduce their own effort by using pretested components, and the fear that the components they are relying on will not be ready in time, will break or will not be maintained as the environment changes. They have to become convinced that someone will support these components - if necessary, on a 24-hour basis. This may not be necessary technically, but may be very necessary psychologically!
-
-Another source of resistance is simply that some programmers love the bits and bytes and don't want to become mere combiners of precoded components. There is a role for these people, writing the components to specs. As we said above, two different roles seem to be emerging: component builders and component users. In my view the latter need skills very similar to those required by analysts. They need to be able to talk to users, gather requirements, and even build systems or prototypes of systems. For the more complex parts or parts which have to perform better, they can subcontract parts to the component builders. This is the domain where the programmer's programmers ("Merlins", as a friend of mine calls them) can shine. In some senses, a component becomes an encapsulation of their particular skill or knowledge. I have found that it makes sense to get "tighter" about the external specs and "looser" about how the code is built internally. This lets them express their creativity, while still serving the needs of the organization as a whole. Of course, it must not be so poorly written that it doesn't perform well! And it absolutely must deliver the function according to the specs! Once those are assured, then your only concern is maintainability. Generalized code should be maintainable, but you probably don't have to control the format of every internal label!
-
-A programmer once said to me, "I don't like DFDM because I don't get dumps"! At the time I took this to mean that because programs built using FBP tend not to crash, it is hard for programmers to get a feel of how they work. Does not knowing how the engine of your car works make you nervous? It probably does affect some people that way, but most of us don't care. Later, I realized that it also brings up the very fundamental question of trust - if the users of a package don't trust the package or its vendor (same thing, really), they are not going to be happy... And trust is fragile: hard to build up, and easy to damage.
-
-Let us suppose that your company has become convinced that developers should not keep "reinventing the wheel", but that, like most companies, you have only reached the stage where you are maintaining a library of shared subroutines. How do we get formalized sharing of components in place? Suppose I find out that Julia is working on a module which is pretty close to what I want but it needs some tweaking to fit my needs. In most shops, we don't even know what to call it. Companies that have just started to grapple with naming standards often think it's neat for module names to start with the project code. For instance, if I am managing project ABC, then I can name all my modules ABC-something. This way, I don't have to worry about my module names conflicting with those of other projects. Even the library names will often have ABC built into them! So, even to be able to find the code, we usually have to have some kind of enterprise-wide naming convention. Next question: who does the modification of the code and who pays for it? What if Julia's schedule slips and starts to impact my schedules? Even if everything goes really well, who will maintain it, document it, and support it?
-
-Many writers about reuse agree that the only solution is to set up an independent department to write and maintain components. This department must have enough resources to do the job properly, which also involves publicising and selling their product. One tendency which must be resisted is that such departments often get tied up producing complex, generalized tools for a few users, or even for none - they just figure the component would be neat and they'll worry about selling them afterwards. Remember the principle of ROI: the company as a whole will get more bang for the buck out of a lot of simple tools, especially if they communicate well with each other, rather than from a few very complex ones. Since good tools will often start as special-purpose modules which some other group has found useful, there must be a path for promoting such ad hoc components to a place where other people can find them and rely on them. Our centralized software support department must have ways to beat the bushes for new and interesting components and must then have ways to evaluate whether potential customers are interested (otherwise why go to all that trouble?). It must also avoid getting sucked into writing or upgrading complex tools which have only a small market. It is a service organization, so it must be service quality oriented, not just a group of self-styled experts who know what is best for everyone else. It must become entrepreneurial, but not exclusively bottom-line oriented. In short, it must follow good financial and engineering practices. If this takes a major shake-up in the way your organization is structured, then you should really get started as soon as possible!
-
-I believe that, unless companies start to bring engineering-type disciplines to application development, not only will they fail to take full advantage of the potential of computers, but they will become more and more swamped with the burden of maintaining old systems. You can't do a lot about old systems - I know, I've seen lots of them - but new systems can be built in such a way that they are maintainable. It should also be possible to gradually convert old programs over to the FBP technology piece-meal, rather than "big bang". A director I once worked for called this "converting an iceberg into ice-cubes"!
-
-I believe all true disciplines follow a sort of cycle through time, which may be represented using the following diagram:
-
-Figure 4.1
-
-Innovation can only be founded on a base of solid knowledge of what went before - otherwise we are doomed to keep rediscovering the same old stale concepts. On the other hand, tradition without innovation cannot result in progress, and innovation is useless unless the word is gotten out to people who can make use of it. As I pointed out above, business application development has not really changed significantly since I started in the business in 1959 - but I really believe that now, at long last, we can start to see the promise of application development becoming a true engineering-style discipline.
+Инновации могут быть основаны только на твердом знании того, что было раньше - в противном случае мы обречены заново открывать для себя одни и те же старые концепции. С другой стороны, традиция без инноваций не может привести к прогрессу, а инновации бесполезны, если слово не передано людям, которые могут их использовать. Как я уже отмечал выше, разработка бизнес-приложений практически не изменилась с тех пор, как я начал работать в этом бизнесе в 1959 году, но я действительно верю, что теперь, наконец, мы можем начать видеть перспективы разработки приложений, которые станут настоящей инженерной дисциплиной.
