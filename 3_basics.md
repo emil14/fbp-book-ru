@@ -20,10 +20,12 @@
 /_ Calculate a to the power b _/
 x = b
 y = 1
+
 do while x > 0
-y = y \* a
-x = x - 1
+    y = y \* a
+    x = x - 1
 enddo
+
 return y
 ```
 
